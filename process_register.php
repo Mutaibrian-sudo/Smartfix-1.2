@@ -1,5 +1,5 @@
 <?php
-session_start();
+//session_start();
 include 'includes/config.php';
 include 'includes/functions.php';
 
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Insert user
     $stmt = $conn->prepare("INSERT INTO users (name, email, phone, password, role_id) VALUES (?, ?, ?, ?, 2)");
     $stmt->bind_param("ssss", $name, $email, $phone, $hashed_password);
-    
+
     if ($stmt->execute()) {
         $_SESSION['success'] = "Account created! Log in now.";
         redirect('login.php');

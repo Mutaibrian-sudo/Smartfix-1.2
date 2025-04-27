@@ -5,7 +5,7 @@
 $host = 'localhost';
 $user = 'root';          // Change in production!
 $pass = '';              // Change in production!
-$db   = 'smartfix';
+$db   = 'smartfix-1.2';
 
 // Establish connection
 try {
@@ -48,7 +48,7 @@ if (empty($_SESSION['csrf_token'])) {
 // =============================================
 // GLOBAL CONSTANTS
 // =============================================
-define('BASE_URL', 'http://localhost/smartfix/'); // Change for production
+define('BASE_URL', 'http://localhost/smartfix-1.2/'); // Change for production
 define('MAX_LOGIN_ATTEMPTS', 5);
 define('LOGIN_LOCKOUT_TIME', 15 * 60); // 15 minutes
 ?>

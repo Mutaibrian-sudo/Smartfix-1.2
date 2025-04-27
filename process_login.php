@@ -1,51 +1,46 @@
 <?php
-session_start();
-include 'includes/config.php';
-include 'includes/functions.php';
+require_once __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/auth.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
+// Verify CSRF first
+verify_csrf_token();
 
-    // 1. Validate Inputs
-    if (empty($email) || empty($password)) {
-        $_SESSION['error'] = "Email and password are required!";
-        redirect('login.php');
-    }
+// Get and sanitize inputs
+$email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+$password = $_POST['password'] ?? '';
 
-    // 2. Fetch User from DB
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+// Basic validation
+if (empty($email) || empty($password)) {
+    Auth::redirectToLogin('Email and password are required');
+}
+
+try {
+    // Get user from database
+    $stmt = $conn->prepare("
+        SELECT id, name, password, role_id 
+        FROM users 
+        WHERE email = ?
+    ");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows === 0) {
-        $_SESSION['error'] = "Invalid email or password!";
-        redirect('login.php');
+        Auth::redirectToLogin('Invalid credentials');
     }
 
     $user = $result->fetch_assoc();
 
-    // 3. Verify Password
-    if (!password_verify($password, $user['password'])) {
-        $_SESSION['error'] = "Invalid email or password!";
-        redirect('login.php');
-    }
-
-    // 4. Set Session Data
-    $_SESSION['user_id'] = $user['id'];
-    $_SESSION['email'] = $user['email'];
-    $_SESSION['name'] = $user['name'];
-    $_SESSION['role'] = ($user['role_id'] == 1) ? 'admin' : 'customer';
-
-    // 5. Redirect Based on Role
-    if ($_SESSION['role'] === 'admin') {
-        redirect('admin/dashboard.php', "Welcome back, Admin!");
+    // Verify password
+    if (password_verify($password, $user['password'])) {
+        Auth::login($user['id'], $email, $user['name'], $user['role_id']);
+        Auth::redirectBasedOnRole();
     } else {
-        redirect('dashboard.php', "Login successful!");
+        Auth::redirectToLogin('Invalid credentials');
     }
-} else {
-    // Block direct access
-    redirect('login.php');
+} catch (Exception $e) {
+    error_log("Login error: " . $e->getMessage());
+    Auth::redirectToLogin('System error. Please try again.');
 }
 ?>
