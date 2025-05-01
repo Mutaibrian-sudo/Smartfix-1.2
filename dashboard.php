@@ -3,14 +3,19 @@ require_once __DIR__ . '/includes/config.php';
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/auth.php';
 
+global $conn;
+
 // Verify authentication and role
 if (!Auth::isLoggedIn()) {
-    Auth::redirectToLogin();
+    redirect('login.php', 'Please login first', 'error');
 }
 
 // Redirect admins to admin dashboard
 if ($_SESSION['role_id'] == 1) {
     redirect('admin/dashboard.php');
+}
+elseif ($_SESSION['role_id'] == 2) {
+    redirect('staff/dashboard.php');
 }
 
 $user_id = $_SESSION['user_id'];
@@ -60,10 +65,41 @@ $stats = $stats_stmt->get_result()->fetch_assoc();
     <title>User Dashboard | SmartFix</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="assets/css/user-dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <?php include 'includes/header.php'; ?>
-    
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-tools me-2"></i>SmartFix User
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="themeToggle">
+                            <i class="fas fa-moon"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i><?= htmlspecialchars($_SESSION['name']) ?>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="profile.php">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="logout.php">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
     <div class="container py-4">
         <div class="row">
             <div class="col-md-3">
@@ -73,6 +109,12 @@ $stats = $stats_stmt->get_result()->fetch_assoc();
             <div class="col-md-9">
                 <h2>Welcome, <?= htmlspecialchars($user['name']) ?></h2>
                 <p class="text-muted"><?= ucfirst($user['role_name']) ?> Account</p>
+                
+                <form method="post" action="some_post_handler.php">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                    <!-- Add your form fields here -->
+                    <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
+                </form>
                 
                 <!-- Stats Cards -->
                 <div class="row mb-4">
@@ -150,8 +192,6 @@ $stats = $stats_stmt->get_result()->fetch_assoc();
         </div>
     </div>
 
-    <?php include 'includes/footer.php'; ?>
-    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

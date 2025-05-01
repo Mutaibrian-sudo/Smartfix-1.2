@@ -1,7 +1,9 @@
 <?php 
-require_once __DIR__ . '/includes/config.php';
-require_once __DIR__ . '/includes/functions.php';
-require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/../includes/config.php';
+require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/auth.php';
+
+global $conn;
 
 // Verify login first
 if (!Auth::isLoggedIn()) {
@@ -9,7 +11,7 @@ if (!Auth::isLoggedIn()) {
 }
 
 // Verify admin access (role_id = 1)
-if ($_SESSION['role_id'] != Auth::ROLE_ADMIN) {
+if ($_SESSION['role_id'] != 1) {
     redirect('dashboard.php', 'Unauthorized access', 'error');
 }
 
@@ -86,7 +88,7 @@ $recent_orders = $conn->query("
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <?php include 'includes/sidebar.php'; ?>
+            <?php include __DIR__ . '/../includes/sidebar.php'; ?>
             
             <!-- Main Area -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">

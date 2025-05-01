@@ -26,10 +26,15 @@ try {
 // =============================================
 // SESSION SECURITY
 // =============================================
+$cookie_secure = false;
+if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+    $cookie_secure = true;
+}
+
 session_start([
     'name' => 'SmartFixSession',
     'cookie_lifetime' => 86400, // 1 day
-    'cookie_secure' => true,    // HTTPS only
+    'cookie_secure' => $cookie_secure,    // HTTPS only if HTTPS is on
     'cookie_httponly' => true,  // No JS access
     'use_strict_mode' => true   // Prevents session fixation
 ]);

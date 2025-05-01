@@ -23,6 +23,7 @@
             <?php endif; ?>
 
             <form action="process_register.php" method="POST" id="registerForm">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                 <div class="mb-3">
                     <label for="name" class="form-label">Full Name</label>
                     <input type="text" class="form-control" id="name" name="name" required>

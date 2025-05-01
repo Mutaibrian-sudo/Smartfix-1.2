@@ -1,13 +1,25 @@
 /* Sidebar Styling */
 .sidebar {
-    min-height: calc(100vh - 56px);
+    position: fixed;
+    top: 56px; /* height of navbar */
+    left: 0;
+    height: calc(100vh - 56px);
+    width: 220px;
     box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    background-color: #212529;
+    z-index: 1030;
+    overflow-y: auto;
 }
 
 .nav-link {
     color: #adb5bd;
     border-left: 3px solid transparent;
     transition: all 0.3s;
+}
+
+/* Adjust main content to account for fixed sidebar */
+main, .col-md-9 {
+    margin-left: 220px;
 }
 
 .nav-link:hover, .nav-link.active {

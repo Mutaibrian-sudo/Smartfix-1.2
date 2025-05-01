@@ -18,11 +18,15 @@
                 <p>Log in to manage your orders</p>
             </div>
             
-            <?php if (isset($_SESSION['error'])): ?>
-                <div class="alert alert-danger"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
+            <?php if (isset($_SESSION['flash'])): ?>
+                <div class="alert alert-<?= htmlspecialchars($_SESSION['flash']['type']) ?>">
+                    <?= htmlspecialchars($_SESSION['flash']['message']) ?>
+                    <?php unset($_SESSION['flash']); ?>
+                </div>
             <?php endif; ?>
 
             <form action="process_login.php" method="POST">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
                     <input type="email" class="form-control" id="email" name="email" required>
